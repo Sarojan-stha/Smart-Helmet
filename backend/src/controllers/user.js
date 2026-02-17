@@ -65,10 +65,76 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
-  const { username, email } = req.body;
+const login = async (req, res) => {
   try {
-    const user = await User.findOneAndUpdate({ email }, { username });
+    const { email, password } = req.body;
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    //  Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    //  Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      },
+    );
+
+    // Send cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    // Send response (without password)
+    const userData = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    };
+
+    return res.status(200).json({
+      message: "Login successful",
+      user: userData,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+const updateUser = async (req, res) => {
+  const { username, password, role, email } = req.body;
+  try {
+    const user = await User.findOneAndUpdate(
+      { email },
+      { username, password, role },
+    );
     res.json(user);
   } catch (error) {
     res.send(error);
@@ -93,4 +159,5 @@ module.exports = {
   getAllUsers,
   updateUser,
   deleteUser,
+  login,
 };
