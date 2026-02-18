@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const helmetSchema = new mongoose.Schema(
   {
-    deviceId: {
+    helemtId: {
       type: String,
       required: true,
       unique: true, // every helmet has a unique device ID

@@ -1,5 +1,8 @@
 require("dotenv").config();
 const User = require("../model/user");
+const Helmet = require("../model/helmet");
+const Telemetry = require("../model/telemetry");
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -154,10 +157,86 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  const { id, email, role } = req.user;
+
+  try {
+    let users;
+
+    if (role === "admin") {
+      users = await User.find().select("-password"); // all users except passwords
+    } else {
+      users = await User.findOne({ email }).select("-password"); // only current user
+    }
+
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const getHelmetData = async (req, res) => {
+  const { id, role } = req.user;
+  const helmetId = req.params.id;
+
+  try {
+    const helmet = await Helmet.findById(helmetId).populate(
+      "rider",
+      "name email role",
+    );
+
+    if (!helmet) {
+      return res.status(404).json({ message: "Helmet not found" });
+    }
+
+    // Ownership check for regular users
+    if (role !== "admin" && helmet.rider._id.toString() !== userId) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    res.status(200).json({ helmet });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const getTelemetryLogs = async (req, res) => {
+  const { id, role } = req.user;
+  const helmetId = req.params.helmetId;
+
+  try {
+    const helmet = await Helmet.findById(helmetId);
+
+    if (!helmet) {
+      return res.status(404).json({ message: "Helmet not found" });
+    }
+
+    // Ownership check for regular users
+    if (role !== "admin" && helmet.rider.toString() !== userId) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    // Fetch telemetry logs
+    const logs = await Telemetry.find({ helmet: helmetId }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json({ logs });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   updateUser,
   deleteUser,
   login,
+  getProfile,
+  getHelmetData,
+  getTelemetryLogs,
 };
