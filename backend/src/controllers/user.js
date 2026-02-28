@@ -230,6 +230,19 @@ const getTelemetryLogs = async (req, res) => {
   }
 };
 
+const checkCompleteProfile = async (req, res) => {
+  console.log("req:", req.auth);
+
+  const user = await db.users.findOne({ sub: req.auth.sub });
+  // sub is unique Auth0 ID
+
+  if (!user) {
+    res.json({ message: "User doesnt exits" });
+  }
+  const complete = user && user.phone && user.helmetId; // all required fields filled
+  res.json({ complete: true });
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -239,4 +252,5 @@ module.exports = {
   getProfile,
   getHelmetData,
   getTelemetryLogs,
+  checkCompleteProfile,
 };

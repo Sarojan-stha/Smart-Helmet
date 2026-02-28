@@ -1,8 +1,12 @@
 const express = require("express");
-const User = require("../model/user");
 const router = express.Router();
-const authMiddleWare = require("../middlewares/authMiddleware");
-const authorizeMiddleware = require("../middlewares/authorizeMiddleware");
+
+const {
+  requireAuth,
+  getAuth,
+  clerkMiddleware,
+  clerkClient,
+} = require("@clerk/express");
 
 const {
   createUser,
@@ -12,20 +16,49 @@ const {
   login,
   getProfile,
   getHelmetData,
+  checkCompleteProfile,
 } = require("../controllers/user");
 
-router.post("/createUser", createUser);
+router.use(clerkMiddleware());
 
-router.get("/allUsers", authMiddleWare, authorizeMiddleware, getAllUsers);
+// router.post("/signup", createUser);
 
-router.get("/login", login);
+// router.get("/allUsers", authMiddleWare, authorizeMiddleware, getAllUsers);
 
-router.patch("/updateUser", authMiddleWare, updateUser);
+// router.get("/login", login);
 
-router.delete("/deleteUser", authMiddleWare, deleteUser);
+// router.patch("/updateUser", authMiddleWare, updateUser);
 
-router.get("/profile", authMiddleWare, getProfile);
+// router.delete("/deleteUser", authMiddleWare, deleteUser);
 
-router.get("/helmetData", authMiddleWare, getHelmetData);
+// router.get("/profile", authMiddleWare, getProfile);
 
+// router.get("/helmetData", authMiddleWare, getHelmetData);
+
+router.get("/profileStatus", async (req, res) => {
+  const auth = getAuth(req);
+  const { userId } = getAuth(req);
+
+  console.log("auth:", auth.has);
+
+  const user = req.auth();
+  try {
+    console.log("req.auth:", user); // decoded token
+  } catch (error) {
+    console.log(error);
+  }
+
+  res.json({ message: "Hi from backend" });
+});
+
+router.post("/updateRole", async (req, res) => {
+  const { userId } = getAuth(req);
+
+  await clerkClient.users.updateUserMetadata(userId, {
+    publicMetadata: {
+      role: "admin",
+    },
+  });
+  res.status(200).json({ success: true });
+});
 module.exports = router;
