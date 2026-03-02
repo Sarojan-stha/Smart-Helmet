@@ -63,7 +63,6 @@ router.post("/updateRole", async (req, res) => {
   });
   res.status(200).json({ success: true });
 });
-module.exports = router;
 
 router.post(
   "/api/webhooks",
@@ -71,20 +70,10 @@ router.post(
   async (req, res) => {
     try {
       const evt = await verifyWebhook(req);
-      const { id, first_name, last_name, username } = evt.data;
-
-      const user = await User.findOne({ clerkId: id });
-      if (!user) {
-        await User.create({
-          clerkId: id,
-          firstName: first_name,
-          lastName: last_name,
-          username: username,
-        });
-      }
 
       // Do something with payload
       // For this guide, log payload to console
+      const { id } = evt.data;
       const eventType = evt.type;
       console.log(
         `Received webhook with ID ${id} and event type of ${eventType}`,
@@ -98,3 +87,4 @@ router.post(
     }
   },
 );
+module.exports = router;
