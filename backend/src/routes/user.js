@@ -70,15 +70,87 @@ router.post(
   async (req, res) => {
     try {
       const evt = await verifyWebhook(req);
+      const eventType = evt.type;
+      const {
+        id,
+        first_name,
+        last_name,
+        phone_numbers,
+        public_metadata,
+        username,
+        email_addresses,
+        primary_email_address_id,
+      } = evt.data;
+
+      const primaryEmailObj = email_addresses?.find(
+        (e) => e.id === primary_email_address_id,
+      );
+
+      const email = primaryEmailObj?.email_address || null;
+
+      const role = public_metadata?.role;
+      const existingUser = await User.findOne({ clerkId: id });
+
+      const data = {
+        name: first_name,
+        public_metadata: public_metadata,
+        username: username,
+        email: email,
+      };
+
+      if (!existingUser && eventType === "user.created") {
+        console.log("user data :", data);
+
+        await User.create({
+          clerkId: id,
+          email,
+          firstName: first_name,
+          lastName: last_name,
+          username,
+          role,
+        });
+
+        console.log("A user has been created in DB");
+      }
+
+      if (existingUser) {
+        switch (eventType) {
+          case "user.updated":
+            console.log("user data :", data);
+
+            await User.findOneAndUpdate(
+              { clerkId: id },
+              {
+                clerkId: id,
+                email,
+                firstName: first_name,
+                lastName: last_name,
+                username,
+                role,
+              },
+            );
+            console.log("A user has been updated in DB");
+
+            break;
+          case "user.deleted":
+            console.log("user data :", id);
+
+            await User.deleteOne({ clerkId: id });
+            console.log("A user has been deleted from DB");
+
+            break;
+
+          default:
+            break;
+        }
+      }
 
       // Do something with payload
       // For this guide, log payload to console
-      const { id } = evt.data;
-      const eventType = evt.type;
-      console.log(
-        `Received webhook with ID ${id} and event type of ${eventType}`,
-      );
-      console.log("Webhook payload:", evt.data);
+      // console.log(
+      //   `Received webhook with ID ${id} and event type of ${eventType}`,
+      // );
+      // console.log("Webhook payload:", evt.data);
 
       return res.send("Webhook received");
     } catch (err) {

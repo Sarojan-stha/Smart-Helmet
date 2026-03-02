@@ -3,12 +3,11 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema(
   {
     clerkId: { type: String, required: true, unique: true },
-    // username: { type: String, require: true },
+    email: { type: String, require: true, unique: true },
     firstName: { type: String, require: true },
     lastName: { type: String, require: true },
-    email: { type: String, unique: true },
+    username: { type: String, require: true },
     role: { type: String, default: "user" },
-    // helmetId: { type: String, required: true, unique: true },
   },
 
   { timestamps: true },
