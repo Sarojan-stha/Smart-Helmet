@@ -19,6 +19,7 @@ const {
   getProfile,
   getHelmetData,
   checkCompleteProfile,
+  registerHelmet,
 } = require("../controllers/user");
 
 router.use(clerkMiddleware());
@@ -36,6 +37,8 @@ router.use(clerkMiddleware());
 // router.get("/profile", authMiddleWare, getProfile);
 
 // router.get("/helmetData", authMiddleWare, getHelmetData);
+
+router.post("/registerHelmet", requireAuth(), registerHelmet);
 
 router.get("/profileStatus", async (req, res) => {
   const auth = getAuth(req);

@@ -4,8 +4,8 @@ const cookieParser = require("cookie-parser");
 const userRouter = require("./src/routes/user");
 const connectDB = require("./src/config/db");
 const cors = require("cors");
-
-const app = express();
+const { app, server, io } = require("./src/config/socket");
+const bodyParser = require("body-parser");
 
 connectDB();
 
@@ -15,7 +15,7 @@ app.use(
     credentials: true,
   }),
 );
-
+app.use(bodyParser.json());
 // io.on("connection", (socket) => {
 //   console.log("A user connected:", socket.id);
 
@@ -50,6 +50,6 @@ app.use(express.json());
 app.use("/", userRouter);
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
-app.listen(5000, () => {
+server.listen(5000, () => {
   console.log("server running on port 5000");
 });
