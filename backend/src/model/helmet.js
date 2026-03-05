@@ -2,21 +2,32 @@ const mongoose = require("mongoose");
 
 const helmetSchema = new mongoose.Schema(
   {
-    helemtId: {
+    helmetId: {
       type: String,
-      required: true,
       unique: true, // every helmet has a unique device ID
+      required: true,
     },
-    rider: {
+    riderId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // links helmet to a rider
       required: true,
+      unique: true,
     },
-
+    riderUsername: {
+      type: String,
+    },
+    helmetModel: {
+      type: String,
+      required: true,
+    },
+    firmwareVersion: {
+      type: String,
+      required: true,
+    },
     status: {
       type: String,
       enum: ["active", "inactive", "maintenance"],
-      default: "active",
+      default: "inactive",
     },
     lastLocation: {
       lat: Number,

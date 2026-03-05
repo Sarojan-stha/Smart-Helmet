@@ -5,6 +5,7 @@ const Telemetry = require("../model/telemetry");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { getAuth, clerkClient } = require("@clerk/express");
 
 const createUser = async (req, res) => {
   const { username, email, password, role } = req.body;
@@ -243,6 +244,71 @@ const checkCompleteProfile = async (req, res) => {
   res.json({ complete: true });
 };
 
+const registerHelmet = async (req, res) => {
+  try {
+    const { helmetData } = req.body;
+    const { helmetId, helmetModel, firmwareVersion } = helmetData;
+
+    if (!helmetId || !helmetModel || !firmwareVersion) {
+      return res.status(400).json({
+        success: false,
+        message: "All helmet fields are required",
+      });
+    }
+
+    const { userId } = getAuth(req);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+    const rider = await User.findOne({ clerkId: userId });
+
+    console.log("rider", rider);
+
+    console.log("helmetdata :", helmetData);
+    console.log("after middleware:", userId);
+
+    // const registeredHelmet = await Helmet.findOne({ helmetId });
+    // console.log(registeredHelmet);
+
+    // if (!registeredHelmet) {
+    const helmet = await Helmet.create({
+      helmetId,
+      riderId: rider._id,
+      riderUsername: rider.username,
+      helmetModel,
+      firmwareVersion,
+    });
+    console.log("saved to db");
+
+    return res.status(200).json({
+      success: true,
+      message: "Helmet registered successfully",
+      data: helmet,
+    });
+    // }
+  } catch (error) {
+    if (error.code === 11000) {
+     if (error.keyPattern?.helmetId) {
+      return res.status(409).json({
+        success: false,
+        message: "Helmet ID already exists",
+      });
+    }
+
+    if (error.keyPattern?.riderId) {
+      return res.status(409).json({
+        success: false,
+        message: "User already has a registered helmet",
+      });
+    }
+    }
+    console.log("couldnt register:", error);
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -253,4 +319,5 @@ module.exports = {
   getHelmetData,
   getTelemetryLogs,
   checkCompleteProfile,
+  registerHelmet,
 };
