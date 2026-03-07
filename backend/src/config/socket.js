@@ -41,7 +41,8 @@ io.use(async (socket, next) => {
 
     console.log("middleware helmetDetails:", helmet);
 
-    socket.join(helmet.helmetId);
+    // socket.join(helmet.helmetId);
+    // console.log("Joined a room", helmet.helmetId);
 
     next();
   } catch (error) {
@@ -55,11 +56,12 @@ io.on("connection", async (socket) => {
   console.log("a user connected with socketId:", socket.id);
   const helmet = await Helmet.findOne({ riderId: socket.userId });
 
-  socket.join("helmet504");
-  // socket.join(socket.helmetId);
-  console.log("Frontend joined a room");
+  socket.join(helmet.helmetId);
+  console.log("Frontend joined a room", helmet.helmetId);
 
-  io.to("helmet504").emit("message", "hello frontend");
+  io.to("helmet101").emit("message", "hello frontend 101"); //hardcoded room name for testing
+  io.to("helmet504").emit("message", "hello frontend 504"); //hardcoded room name for testing
+
   console.log("Message sent to the room");
 
   socket.on("disconnect", () => {
