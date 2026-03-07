@@ -8,7 +8,8 @@ const helmetSchema = new mongoose.Schema(
       required: true,
     },
     riderId: {
-      type: mongoose.Schema.Types.ObjectId,
+      // type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User", // links helmet to a rider
       required: true,
       unique: true,

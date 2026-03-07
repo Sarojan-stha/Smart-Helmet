@@ -256,7 +256,7 @@ const registerHelmet = async (req, res) => {
       });
     }
 
-    const { userId } = getAuth(req);
+    const { userId } = getAuth(req); //clerk id
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -276,7 +276,7 @@ const registerHelmet = async (req, res) => {
     // if (!registeredHelmet) {
     const helmet = await Helmet.create({
       helmetId,
-      riderId: rider._id,
+      riderId: rider.clerkId,
       riderUsername: rider.username,
       helmetModel,
       firmwareVersion,
@@ -291,19 +291,19 @@ const registerHelmet = async (req, res) => {
     // }
   } catch (error) {
     if (error.code === 11000) {
-     if (error.keyPattern?.helmetId) {
-      return res.status(409).json({
-        success: false,
-        message: "Helmet ID already exists",
-      });
-    }
+      if (error.keyPattern?.helmetId) {
+        return res.status(409).json({
+          success: false,
+          message: "Helmet ID already exists",
+        });
+      }
 
-    if (error.keyPattern?.riderId) {
-      return res.status(409).json({
-        success: false,
-        message: "User already has a registered helmet",
-      });
-    }
+      if (error.keyPattern?.riderId) {
+        return res.status(409).json({
+          success: false,
+          message: "User already has a registered helmet",
+        });
+      }
     }
     console.log("couldnt register:", error);
   }

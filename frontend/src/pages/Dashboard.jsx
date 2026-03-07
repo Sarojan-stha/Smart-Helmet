@@ -22,6 +22,7 @@ function Dashboard() {
       console.log("cannot fetch the data error:", error);
     }
   };
+
   const updateRole = async () => {
     const token = await getToken();
     console.log(token);
@@ -49,6 +50,8 @@ function Dashboard() {
       <h2>Welcome</h2>
       <p>{user?.fullName}</p>
       {console.log("metadata:", user.publicMetadata)}
+
+      {console.log("userId from clerk :", userId)}
 
       <button onClick={signOut}>Logout</button>
       {/* Show the user button when the user is signed in */}
