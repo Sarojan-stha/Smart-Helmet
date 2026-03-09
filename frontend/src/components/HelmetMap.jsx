@@ -38,11 +38,7 @@ function HelmetMap({ helmetData: { lat, lng } }) {
 
   return (
     <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={fixedPosition}
-        zoom={15}
-      >
+      <GoogleMap mapContainerStyle={containerStyle} center={position} zoom={15}>
         <Marker position={position} />
       </GoogleMap>
     </LoadScript>

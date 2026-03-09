@@ -1,5 +1,5 @@
 import { UserButton, useUser, useAuth } from "@clerk/clerk-react";
-
+import HelmetMap from "../components/HelmetMap";
 function Dashboard() {
   const { user } = useUser();
   const { userId, sessionId, getToken, isLoaded, isSignedIn, signOut } =
@@ -60,6 +60,7 @@ function Dashboard() {
 
       <p>Helmet Data & Map will appear here</p>
       <button onClick={fetchData}>Fetch from backend</button>
+      <HelmetMap helmetData={{ lat: 27.747888, lng: 85.316345 }} />
     </div>
   );
 }
