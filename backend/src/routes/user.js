@@ -104,6 +104,12 @@ router.post(
       if (!existingUser && eventType === "user.created") {
         console.log("user data :", data);
 
+        await clerkClient.users.updateUserMetadata(id, {
+          publicMetadata: {
+            role: "user",
+          },
+        });
+
         await User.create({
           clerkId: id,
           email,
@@ -129,7 +135,7 @@ router.post(
                 firstName: first_name,
                 lastName: last_name,
                 username,
-                role,
+                role: role || existingUser.role,
               },
             );
             console.log("A user has been updated in DB");

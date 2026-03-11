@@ -1,6 +1,6 @@
 import { UserButton, useUser, useAuth } from "@clerk/clerk-react";
-import HelmetMap from "../components/HelmetMap";
-function Dashboard() {
+import HelmetMap from "../../components/HelmetMap";
+function AdminDashboard() {
   const { user } = useUser();
   const { userId, sessionId, getToken, isLoaded, isSignedIn, signOut } =
     useAuth();
@@ -43,8 +43,7 @@ function Dashboard() {
 
   return (
     <div>
-      <UserButton />
-      <h2>Dashboard</h2>
+      <h2>AdminDashboard</h2>
       <button onClick={updateRole}>Update role</button>
       <hr />
       <h2>Welcome</h2>
@@ -53,7 +52,6 @@ function Dashboard() {
 
       {console.log("userId from clerk :", userId)}
 
-      <button onClick={signOut}>Logout</button>
       {/* Show the user button when the user is signed in */}
 
       <hr />
@@ -65,4 +63,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default AdminDashboard;
