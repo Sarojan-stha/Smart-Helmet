@@ -174,6 +174,16 @@ wss.on("connection", async (ws, req) => {
 
       // Only save detailed telemetry if trip active
       const tripData = activeTrips[helmetId];
+      if (!tripData && data.accident) {
+        io.to(helmetId).emit("accidentAlert", {
+          message: "ACCIDENT DETECTED",
+          timestamp: new Date(),
+          location: { latitude: data.latitude, longitude: data.longitude },
+        });
+
+        console.log(`⚠️ ACCIDENT DETECTED (NO ACTIVE TRIP) - Helmet: ${helmetId}`);
+      }
+
       if (!tripData) {
         return;
       }
