@@ -20,25 +20,15 @@ const {
   getHelmetData,
   checkCompleteProfile,
   registerHelmet,
+  getMyHelmet,
+  deleteMyHelmet,
 } = require("../controllers/user");
 
 router.use(clerkMiddleware());
 
-// router.post("/signup", createUser);
-
-// router.get("/allUsers", authMiddleWare, authorizeMiddleware, getAllUsers);
-
-// router.get("/login", login);
-
-// router.patch("/updateUser", authMiddleWare, updateUser);
-
-// router.delete("/deleteUser", authMiddleWare, deleteUser);
-
-// router.get("/profile", authMiddleWare, getProfile);
-
-// router.get("/helmetData", authMiddleWare, getHelmetData);
-
 router.post("/registerHelmet", requireAuth(), registerHelmet);
+router.get("/helmet/me", requireAuth(), getMyHelmet);
+router.delete("/helmet/me", requireAuth(), deleteMyHelmet);
 
 router.get("/profileStatus", async (req, res) => {
   const auth = getAuth(req);
@@ -168,4 +158,5 @@ router.post(
     }
   },
 );
+
 module.exports = router;
