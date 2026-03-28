@@ -309,6 +309,68 @@ const registerHelmet = async (req, res) => {
   }
 };
 
+const getMyHelmet = async (req, res) => {
+  try {
+    const { userId } = getAuth(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const helmet = await Helmet.findOne({ riderId: userId });
+
+    return res.status(200).json({
+      success: true,
+      data: helmet,
+    });
+  } catch (error) {
+    console.error("Error fetching helmet:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch helmet",
+      error: error.message,
+    });
+  }
+};
+
+const deleteMyHelmet = async (req, res) => {
+  try {
+    const { userId } = getAuth(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const deletedHelmet = await Helmet.findOneAndDelete({ riderId: userId });
+
+    if (!deletedHelmet) {
+      return res.status(404).json({
+        success: false,
+        message: "No helmet found for this user",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Helmet deleted successfully",
+      data: deletedHelmet,
+    });
+  } catch (error) {
+    console.error("Error deleting helmet:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete helmet",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -320,4 +382,6 @@ module.exports = {
   getTelemetryLogs,
   checkCompleteProfile,
   registerHelmet,
+  getMyHelmet,
+  deleteMyHelmet,
 };

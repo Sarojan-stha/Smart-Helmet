@@ -1,6 +1,7 @@
 import { UserButton, useUser, useAuth } from "@clerk/clerk-react";
-import HelmetMap from "../components/HelmetMap";
-function Dashboard() {
+import HelmetMap from "../../components/HelmetMap";
+import Button from "@mui/material/Button";
+function AdminDashboard() {
   const { user } = useUser();
   const { userId, sessionId, getToken, isLoaded, isSignedIn, signOut } =
     useAuth();
@@ -43,8 +44,7 @@ function Dashboard() {
 
   return (
     <div>
-      <UserButton />
-      <h2>Dashboard</h2>
+      <h2>AdminDashboard</h2>
       <button onClick={updateRole}>Update role</button>
       <hr />
       <h2>Welcome</h2>
@@ -53,16 +53,23 @@ function Dashboard() {
 
       {console.log("userId from clerk :", userId)}
 
-      <button onClick={signOut}>Logout</button>
       {/* Show the user button when the user is signed in */}
 
       <hr />
 
       <p>Helmet Data & Map will appear here</p>
-      <button onClick={fetchData}>Fetch from backend</button>
+      <Button
+        onClick={fetchData}
+        variant="contained"
+        color="primary"
+        sx={{ px: 1, py: 0.5 }}
+      >
+        Fetch from backend
+      </Button>
+
       <HelmetMap helmetData={{ lat: 27.747888, lng: 85.316345 }} />
     </div>
   );
 }
 
-export default Dashboard;
+export default AdminDashboard;

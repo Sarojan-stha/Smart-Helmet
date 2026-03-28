@@ -1,0 +1,43 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        navbar: "var(--navbar)",
+        "navbar-foreground": "var(--navbar-foreground)",
+        primary: "var(--primary)",
+        "primary-foreground": "var(--primary-foreground)",
+        secondary: "var(--secondary)",
+        "secondary-foreground": "var(--secondary-foreground)",
+        accent: "var(--accent)",
+        "accent-foreground": "var(--accent-foreground)",
+        destructive: "var(--destructive)",
+        "destructive-foreground": "var(--destructive-foreground)",
+        success: "var(--success)",
+        "success-foreground": "var(--success-foreground)",
+        muted: "var(--muted)",
+        "muted-foreground": "var(--muted-foreground)",
+        foreground: "var(--foreground)",
+        background: "var(--background)",
+        card: "var(--card)",
+        "card-foreground": "var(--card-foreground)",
+        popover: "var(--popover)",
+        "popover-foreground": "var(--popover-foreground)",
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+      },
+      borderRadius: {
+        sm: "calc(var(--radius) * 0.6)",
+        md: "calc(var(--radius) * 0.8)",
+        lg: "var(--radius)",
+        xl: "calc(var(--radius) * 1.4)",
+        "2xl": "calc(var(--radius) * 1.8)",
+        "3xl": "calc(var(--radius) * 2.2)",
+        "4xl": "calc(var(--radius) * 2.6)",
+      },
+    },
+  },
+  plugins: [],
+};
