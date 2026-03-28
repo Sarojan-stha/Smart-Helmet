@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { useAuth } from "@clerk/clerk-react";
+import { useModalStore } from "../store/useModelStore";
 
 const URL = "http://localhost:5000";
 const socket = io(URL, {
@@ -20,8 +20,13 @@ const socketConnect = async (token, isSignedIn) => {
       console.log("Connected to server:", socket.id);
     });
 
-    socket.on("alert", (data) => {
+    socket.on("accidentAlert", (data) => {
       console.log("Alert from server:", data);
+      // Trigger modal using Zustand .getState() (works outside React components)
+      useModalStore.getState().openModal({
+        type: "error",
+        message: data.message,
+      });
     });
   } catch (error) {
     console.error("Socket connection failed:", error);
@@ -29,7 +34,7 @@ const socketConnect = async (token, isSignedIn) => {
   }
 };
 
-socket.on("message", (data) => {
+socket.on("liveData", (data) => {
   console.log("data recieved from backend", data);
 });
 

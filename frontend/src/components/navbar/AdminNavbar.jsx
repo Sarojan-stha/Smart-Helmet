@@ -31,6 +31,9 @@ function AdminNavbar() {
       <Link to="/admin/profile" style={{ margin: "0 10px", color: "#fff" }}>
         Admin
       </Link>
+      <Link to="/admin/users" style={{ margin: "0 10px", color: "#fff" }}>
+        Users
+      </Link>
 
       {isSignedIn ? <button onClick={signOut}>Logout</button> : null}
       <UserButton />

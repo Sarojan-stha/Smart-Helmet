@@ -3,16 +3,19 @@ import UserNavbar from "../navbar/UserNavbar";
 
 const UserLayout = () => {
   return (
-    <>
-      <h1>User layout</h1>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        width: "100%",
+      }}
+    >
       <UserNavbar />
-      <div style={{ display: "flex" }}>
-        {/* Main content area */}
-        <main style={{ flex: 1, padding: "20px" }}>
-          <Outlet /> {/* Renders the matched route component */}
-        </main>
-      </div>
-    </>
+      <main style={{ flex: 1, width: "100%" }}>
+        <Outlet />
+      </main>
+    </div>
   );
 };
 

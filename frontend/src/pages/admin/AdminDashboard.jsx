@@ -1,5 +1,6 @@
 import { UserButton, useUser, useAuth } from "@clerk/clerk-react";
 import HelmetMap from "../../components/HelmetMap";
+import Button from "@mui/material/Button";
 function AdminDashboard() {
   const { user } = useUser();
   const { userId, sessionId, getToken, isLoaded, isSignedIn, signOut } =
@@ -57,7 +58,15 @@ function AdminDashboard() {
       <hr />
 
       <p>Helmet Data & Map will appear here</p>
-      <button onClick={fetchData}>Fetch from backend</button>
+      <Button
+        onClick={fetchData}
+        variant="contained"
+        color="primary"
+        sx={{ px: 1, py: 0.5 }}
+      >
+        Fetch from backend
+      </Button>
+
       <HelmetMap helmetData={{ lat: 27.747888, lng: 85.316345 }} />
     </div>
   );
