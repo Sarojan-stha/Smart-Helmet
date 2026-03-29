@@ -1,8 +1,9 @@
 import { UserButton, useUser, useAuth } from "@clerk/clerk-react";
 import HelmetMap from "../../components/HelmetMap";
 import { socket } from "../../lib/socket";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import useGlobalStore from "../../zustandStore/useGlobalStore";
 
 import {
   Gauge,
@@ -19,7 +20,7 @@ function Dashboard() {
   const { user } = useUser();
   const { getToken } = useAuth();
 
-  const [helmetData, setHelmetData] = useState(null);
+  const helmetData = useGlobalStore((state) => state.helmetData);
   const [tripStarted, setTripStarted] = useState(false);
   const [tripId, setTripId] = useState(null);
   const [tripError, setTripError] = useState("");
@@ -35,29 +36,6 @@ function Dashboard() {
 
     return { latitude, longitude };
   };
-
-  useEffect(() => {
-    socket.on("message", (data) => {
-      console.log("data from esp", data);
-      setHelmetData(data);
-    });
-
-    socket.on("helmetStatus", (status) => {
-      console.log("Helmet status update:", status);
-      setHelmetData(status);
-    });
-
-    socket.on("livedata", (data) => {
-      console.log("Live data update:", data);
-      setHelmetData(data);
-    });
-
-    return () => {
-      socket.off("message");
-      socket.off("helmetStatus");
-      socket.off("livedata");
-    };
-  }, []);
 
   const fetchData = async () => {
     const token = await getToken();
@@ -208,7 +186,7 @@ function Dashboard() {
             <Gauge className="text-primary" size={18} />
           </div>
           <h2 className="text-3xl font-bold mt-2 text-primary">
-            {helmetData ? `${helmetData.speed} km/h` : "--"}
+            {helmetData ? `${helmetData.speed} km/h` : "12Km/h"}
           </h2>
         </div>
 

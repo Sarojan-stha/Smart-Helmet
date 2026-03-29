@@ -9,7 +9,8 @@ const { verifyToken } = require("@clerk/backend");
 const app = express();
 const server = createServer(app);
 const ACCIDENT_DEDUP_MS = Number(process.env.ACCIDENT_DEDUP_MS || 15000);
-const ESP_SHARED_API_KEY = process.env.ESP_SHARED_API_KEY;
+const ALLOW_UNREGISTERED_HELMETS =
+  (process.env.ALLOW_UNREGISTERED_HELMETS || "true") === "true";
 
 const io = new Server(server, {
   cors: {
@@ -107,7 +108,6 @@ wss.on("connection", async (ws, req) => {
   try {
     const params = new URLSearchParams(req.url.split("?")[1]);
     const helmetId = params.get("helmetId");
-    const apiKey = params.get("apiKey");
 
     const clientIP = req.socket.remoteAddress;
     console.log(
@@ -121,18 +121,15 @@ wss.on("connection", async (ws, req) => {
       return;
     }
 
-    // Validate shared device api key only when configured.
-    if (ESP_SHARED_API_KEY && apiKey !== ESP_SHARED_API_KEY) {
-      console.error(`Invalid apiKey for helmet: ${helmetId}`);
-      ws.close(1008, "Invalid apiKey");
-      return;
-    }
-
     const registeredHelmet = await Helmet.findOne({ helmetId });
-    if (!registeredHelmet) {
+    if (!registeredHelmet && !ALLOW_UNREGISTERED_HELMETS) {
       console.error(`Helmet not registered: ${helmetId}`);
       ws.close(1008, "Helmet not registered");
       return;
+    }
+
+    if (!registeredHelmet && ALLOW_UNREGISTERED_HELMETS) {
+      console.warn(`TEMP ALLOW: Unregistered helmet connected: ${helmetId}`);
     }
 
     console.log(`ESP32 connected successfully: ${helmetId} (${clientIP})`);
@@ -181,7 +178,9 @@ wss.on("connection", async (ws, req) => {
           location: { latitude: data.latitude, longitude: data.longitude },
         });
 
-        console.log(`⚠️ ACCIDENT DETECTED (NO ACTIVE TRIP) - Helmet: ${helmetId}`);
+        console.log(
+          `⚠️ ACCIDENT DETECTED (NO ACTIVE TRIP) - Helmet: ${helmetId}`,
+        );
       }
 
       if (!tripData) {
